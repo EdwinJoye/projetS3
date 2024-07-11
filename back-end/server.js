@@ -6,16 +6,15 @@ const bodyParser = require("body-parser");
 
 const materialRoutes = require("./routes/material.routes");
 const furnitureRoutes = require("./routes/furniture.routes");
+const authRoutes = require("./routes/auth.routes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-// CSP avec les directives nécessaires
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -28,19 +27,16 @@ app.use(
   })
 );
 
-// Serve static files from the React app
 app.use(express.static(path.join(__dirname, "client/build")));
 
-// Routes
 app.use("/materials", materialRoutes);
 app.use("/furnitures", furnitureRoutes);
+app.use("/auth", authRoutes);
 
-// The "catchall" handler: for any request that doesn't match one above, send back React's index.html file.
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "client/build/index.html"));
 });
 
-// Server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
