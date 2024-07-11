@@ -28,6 +28,25 @@ router.get("/all", async (req, res) => {
   }
 });
 
+// Route pour récupérer un meuble par son ID
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query("SELECT * FROM furnitures WHERE id = $1", [
+      id,
+    ]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Meuble non trouvé" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
+
 // Route pour supprimer un meuble
 router.delete("/:id", async (req, res) => {
   try {
@@ -36,38 +55,6 @@ router.delete("/:id", async (req, res) => {
     res.json({ message: "Meuble supprimé avec succès" });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error");
-  }
-});
-
-// Route pour récupérer les meubles une fois filtrés
-router.get("/filtered", async (req, res) => {
-  try {
-    const { materials } = req.query;
-
-    if (!materials) {
-      const result = await pool.query("SELECT * FROM furnitures");
-      return res.json(result.rows);
-    }
-
-    const materialNames = materials
-      .split(",")
-      .map((material) => material.trim().toLowerCase());
-
-    const queryText = `
-      SELECT *
-      FROM furnitures
-      WHERE EXISTS (
-        SELECT 1
-        FROM unnest(materials_used) AS m(material)
-        WHERE LOWER(m) = ANY($1)
-      )
-    `;
-
-    const result = await pool.query(queryText, [materialNames]);
-    res.json(result.rows);
-  } catch (err) {
-    console.error("Error in /filtered route:", err.message);
     res.status(500).send("Server Error");
   }
 });
