@@ -5,10 +5,10 @@ const pool = require("../db.js");
 // Route pour ajouter un nouveau meuble
 router.post("/add", async (req, res) => {
   try {
-    const { name, category_id, materials_used, img } = req.body;
+    const { name, category_id, materials_used, img, description } = req.body;
     const result = await pool.query(
-      "INSERT INTO furnitures (name, category_id, materials_used, img) VALUES ($1, $2, $3, $4) RETURNING *",
-      [name, category_id, materials_used, img]
+      "INSERT INTO furnitures (name, category_id, materials_used, img, description) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [name, category_id, materials_used, img, description]
     );
     res.json(result.rows[0]);
   } catch (err) {
