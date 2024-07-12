@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const pool = require("../db");
 const router = express.Router();
 
-// Endpoint pour la connexion
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -35,7 +34,7 @@ router.post("/login", async (req, res) => {
         .json({ message: "Mot de passe incorrect", password, validPassword });
     }
 
-    // Générer le JWT pour l'utilisateur authentifié
+    // Généreration du JWT pour l'utilisateur authentifié
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       process.env.JWT_SECRET,
